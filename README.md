@@ -15,10 +15,6 @@
 
 <br/>
 
-![PerceptX ISRO FSOC Hero Banner](assets/perceptx_hero_banner.png)
-
-<br/>
-
 ```
   ____  _____ ____   ____ _____ ____ _____  __  __
  |  _ \| ____|  _ \ / ___| ____|  _ |_   _| \ \/ /
@@ -27,7 +23,7 @@
  |_|   |_____|_| \_\\____|_____|_|    |_|   /_/\_\
 ```
 
-**[ 📖 Quick Setup ](#-quick-start--reproducibility-guide)** • **[ ⚡ Performance Specs ](#-empirical-performance-highlights)** • **[ 🏗️ Architecture ](#-hardware-in-the-loop-hil-system-architecture)** • **[ 📊 Validation Gallery ](#-empirical-performance--validation-gallery)** • **[ 📋 ISRO Compliance ](#-official-isro-parameters--compliance-matrix)**
+**[ 📖 Quick Setup ](#-quick-start--reproducibility-guide)** • **[ ⚡ Performance Specs ](#-empirical-performance-highlights)** • **[ 🏗️ Architecture ](#-hardware-in-the-loop-hil-system-architecture)** • **[ 📊 Test Output Gallery ](#-test-execution-output-gallery)** • **[ 📋 ISRO Compliance ](#-official-isro-parameters--compliance-matrix)**
 
 </div>
 
@@ -62,11 +58,61 @@ In **Free Space Optical Communication (FSOC)**, data transmission relies on narr
 
 The PERCEPTX pipeline connects a 3D Unity physical simulator and a 5-stage Python AI/CV perception and estimation engine over zero-latency TCP local sockets.
 
-![PerceptX Architecture Data Flow](assets/pipeline_architecture_animated.svg)
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          NOORUL: UNITY SIMULATOR (C#)                       │
+│  - 3D Dark Space Scene (640x480 Monochrome FPA)                             │
+│  - Target Dynamics: Linear, Circular, Figure-8, Random                      │
+│  - Disturbance Injector: Salt & Pepper, Gaussian, Jitter, Fog, Rain         │
+│  - Virtual PTZ Motor Model (Max Slew: 5 deg/s, >= 20Hz loop)                │
+│  - Dataset Exporter: 3,000 Synthetic Frames + Bounding Box Text Labels     │
+└──────────────┬──────────────────────────────────────────────▲───────────────┘
+               │ RGB Frame (640x480)                          │ pan_delta
+               │ frame_id + timestamp                         │ tilt_delta
+               │ (TCP Port 5005 @ 30Hz)                       │ (>= 20Hz)
+               ▼                                              │
+┌──────────────────────────────────────────────┐              │
+│       JEEVAN: NETWORK & BENCHMARK RUNNER     │              │
+│  - TCP Receiver / Frame Deserialization      │              │
+│  - Direct .mp4 File Mode (Benchmark-2)       │              │
+└──────────────┬───────────────────────────────┘              │
+               │ Raw Frame (NumPy Array)                      │
+               ▼                                              │
+┌──────────────────────────────────────────────┐              │
+│   JAIRUS & AI ENGINEER: CV & CNN ENGINE      │              │
+│  - Fast Path: Median + Top-Hat + Sub-pixel   │              │
+│  - AI Fallback: Fine-Tuned YOLOv8n ONNX      │              │
+└──────────────┬───────────────────────────────┘              │
+               │ Raw Coordinate (u, v) + Confidence           │
+               ▼                                              │
+┌──────────────────────────────────────────────┐              │
+│      DHANYA: KALMAN STATE ESTIMATOR          │              │
+│  - Constant Acceleration EKF / Motion Model  │              │
+│  - Jitter Filtering (+/- 20 px/frame)        │              │
+│  - Occlusion Dead-Reckoning                  │              │
+└──────────────┬───────────────────────────────┘              │
+               │ Filtered State: [x, y, vx, vy]               │
+               ▼                                              │
+┌──────────────────────────────────────────────┐              │
+│     JAIRUS: PID CONTROL & REACQUISITION      │              │
+│  - Pixel-to-Angle Mapping (4°x3° FOV)        │              │
+│  - Dual-Axis PID Loop with Slew-Limit Clamping│              │
+│  - Spiral Search Reacquisition State Machine │              │
+└──────────────┬───────────────────────────────┘              │
+               └──────────────────────────────────────────────┘
+               │ Diagnostic Telemetry
+               ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│            JAIRUS: PERFORMANCE LOGGER & UNIFIED LAUNCHER                    │
+│  - Real-time RMSE, Tracking Error, Lock Retention, Latency/FPS              │
+│  - Auto-generated CSV / JSON evaluation logs                                │
+│  - 1-Click Desktop Packaging (PyQt / Subprocess supervisor)                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ### 🧩 Core Module Breakdown
 
-<details opacity="1" open>
+<details open>
 <summary><b>1️⃣ Module 1: Unity 3D Environment Simulator (C# & Compute Shaders)</b></summary>
 
 * **Owner:** Noorul
@@ -117,41 +163,40 @@ The PERCEPTX pipeline connects a 3D Unity physical simulator and a 5-stage Pytho
 
 ---
 
-## 📊 Empirical Performance & Validation Gallery
+## 📊 Test Execution Output Gallery
 
-### 🌀 Archimedean Spiral Re-Acquisition Engine
+Below are the actual benchmark test execution output plots generated by the Kalman filter, PID controller, and re-acquisition evaluation scripts:
 
-When target lock is lost for $>0.5\text{ s}$ (15 frames @ 30Hz), the Archimedean Spiral Engine initiates polar expansion sweep $r(\theta) = b \cdot \theta$ centered at the last known target coordinate, guaranteeing 100% area coverage within the motor's $5^\circ/\text{s}$ slew budget.
+### 1️⃣ Kalman Filter Motion Profile Tracking Plots
 
-![Archimedean Spiral Engine Animation](assets/spiral_search_animated.svg)
+#### 🔵 Circular Motion Tracking
+![Kalman Filter Circular Motion Test](assets/kalman_test_circular.png)
+
+#### ♾️ Figure-8 Trajectory Tracking
+![Kalman Filter Figure-8 Motion Test](assets/kalman_test_figure8.png)
+
+#### 🎲 Random Walk Jitter Tracking
+![Kalman Filter Random Walk Motion Test](assets/kalman_test_random.png)
+
+#### 📏 Straight Line Motion Tracking
+![Kalman Filter Straight Line Motion Test](assets/kalman_test_straightline.png)
 
 ---
 
-### 📈 Multi-Motion Trajectory Validation Results
+### 2️⃣ PID Gimbal Control & Parameter Tuning Outputs
 
-| Motion Scenario | Trajectory & Centroid Error Plot | Key Performance Findings |
-| :--- | :---: | :--- |
-| **Circular Motion** | ![Circular Motion Plot](assets/kalman_test_circular.png) | • **RMSE Error:** $1.25\text{ px}$<br>• **Lock Retention:** $100.0\%$<br>• **Frame Rate:** $311.2\text{ FPS}$ |
-| **Figure-8 Motion** | ![Figure-8 Motion Plot](assets/kalman_test_figure8.png) | • **RMSE Error:** $1.78\text{ px}$<br>• **Lock Retention:** $100.0\%$<br>• **Frame Rate:** $306.8\text{ FPS}$ |
-| **Random Walk Jitter** | ![Random Walk Plot](assets/kalman_test_random.png) | • **RMSE Error:** $3.26\text{ px}$<br>• **Lock Retention:** $97.9\%$<br>• **Frame Rate:** $300.3\text{ FPS}$ |
-| **Linear Motion** | ![Linear Motion Plot](assets/kalman_test_straightline.png) | • **RMSE Error:** $2.93\text{ px}$<br>• **Lock Retention:** $100.0\%$<br>• **Frame Rate:** $464.0\text{ FPS}$ |
+#### 🎛️ Dual-Axis PID Step Response & Slew Clamping
+![PID Demo Output](assets/pid_demo_output.png)
 
----
-
-### 🎛️ Dual-Axis PID Gimbal Controller Dynamics
-
-![PID Step Response](assets/pid_demo_output.png)
+#### 🔍 PID Grid Search Tuning Results
 ![PID Grid Search Results](assets/pid_tuning_results.png)
 
-> **PID Controller Tuning Parameters:** $P = 0.45$, $I = 0.02$, $D = 0.08$. Maximum motor velocity strictly bounded to $5.0^\circ/\text{s}$ with zero derivative kick or overshoot.
-
 ---
 
-### 🔄 Forced Target Loss & Re-Acquisition Response
+### 3️⃣ Target Loss & Re-Acquisition Engine Output
 
-![Reacquisition Performance Plot](assets/reacquisition_demo_output.png)
-
-> **Forced Dropout Test:** Target artificially occluded for $0.6\text{s} - 1.5\text{s}$. System transitions automatically from `TRACK` $\rightarrow$ `COASTING` $\rightarrow$ `SPIRAL_SEARCHING` $\rightarrow$ `REACQUIRED` in **$0.60\text{s} - 0.84\text{s}$**.
+#### 🌀 Archimedean Spiral Re-Acquisition Response
+![Re-acquisition Demo Output](assets/reacquisition_demo_output.png)
 
 ---
 
@@ -204,7 +249,7 @@ python scratch/run_all_evaluations.py
 ### 3. Run PyTest Verification Suite
 
 ```bash
-pytest tests/ -v
+PYTHONPATH=. pytest tests/ -v
 ```
 
 ### 4. Execute Benchmark-2 Offline Video Processing
