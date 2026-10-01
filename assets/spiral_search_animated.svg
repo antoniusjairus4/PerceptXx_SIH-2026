@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <!-- Dark Sci-Fi Gradients -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#030712" />
+    </radialGradient>
+    
+    <radialGradient id="glowCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="1" />
+      <stop offset="50%" stop-color="#00a8ff" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="beaconGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff0055" stop-opacity="1" />
+      <stop offset="100%" stop-color="#ff0055" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Linear Gradient for Spiral Path -->
+    <linearGradient id="spiralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.2" />
+      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#7000ff" stop-opacity="1" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" rx="12" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="2" />
+
+  <!-- Grid Pattern -->
+  <g opacity="0.15" stroke="#00f0ff" stroke-width="0.5">
+    <line x1="0" y1="75" x2="800" y2="75" />
+    <line x1="0" y1="150" x2="800" y2="150" />
+    <line x1="0" y1="225" x2="800" y2="225" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+    <line x1="0" y1="375" x2="800" y2="375" />
+    
+    <line x1="100" y1="0" x2="100" y2="450" />
+    <line x1="200" y1="0" x2="200" y2="450" />
+    <line x1="300" y1="0" x2="300" y2="450" />
+    <line x1="400" y1="0" x2="400" y2="450" />
+    <line x1="500" y1="0" x2="500" y2="450" />
+    <line x1="600" y1="0" x2="600" y2="450" />
+    <line x1="700" y1="0" x2="700" y2="450" />
+  </g>
+
+  <!-- Header HUD UI -->
+  <text x="30" y="40" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#00f0ff" letter-spacing="2">
+    🌀 ARCHIMEDEAN SPIRAL REACQUISITION ENGINE
+  </text>
+  <text x="30" y="60" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#94a3b8" letter-spacing="1">
+    EQUATION: r(θ) = b · θ  |  MAX SLEW: 5.0°/s  |  RE-ACQUISITION TIME: ≤ 1.0s
+  </text>
+
+  <!-- Status Badge -->
+  <g transform="translate(620, 25)">
+    <rect x="0" y="0" width="150" height="28" rx="14" fill="#030712" stroke="#00f0ff" stroke-width="1.5" />
+    <circle cx="15" cy="14" r="5" fill="#00f0ff">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite" />
+    </circle>
+    <text x="28" y="18" font-family="monospace" font-size="11" font-weight="bold" fill="#00f0ff">SPIRAL_SEARCH</text>
+  </g>
+
+  <!-- Main Center Coordinates (400, 240) -->
+  <g transform="translate(400, 240)">
+    <!-- Concentric Distance Rings -->
+    <circle cx="0" cy="0" r="40" fill="none" stroke="#1e293b" stroke-dasharray="4 4" />
+    <circle cx="0" cy="0" r="80" fill="none" stroke="#1e293b" stroke-dasharray="4 4" />
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#1e293b" stroke-dasharray="4 4" />
+    <circle cx="0" cy="0" r="160" fill="none" stroke="#1e293b" stroke-dasharray="4 4" />
+
+    <!-- Axes -->
+    <line x1="-180" y1="0" x2="180" y2="0" stroke="#334155" stroke-width="1" />
+    <line x1="0" y1="-180" x2="0" y2="180" stroke="#334155" stroke-width="1" />
+
+    <!-- Archimedean Spiral Path -->
+    <!-- Parametric spiral points pre-calculated: r = 0.05 * t * 25 -->
+    <path d="M 0 0 
+             C 1.5 -3.2, 5.8 -5.5, 9.8 -3.8 
+             C 15.2 -1.2, 17.5 7.1, 14.2 13.8 
+             C 8.9 23.5, -4.8 26.2, -15.8 20.1 
+             C -29.8 12.2, -32.9 -8.8, -23.5 -24.8 
+             C -11.5 -44.8, 16.5 -48.5, 38.2 -34.8 
+             C 64.2 -18.2, 68.8 19.8, 49.2 50.8 
+             C 25.2 88.8, -27.2 93.8, -67.2 67.8 
+             C -115.2 36.8, -121.2 -30.8, -87.2 -88.8 
+             C -47.2 -150.8, 38.8 -158.8, 110.0 -115.0" 
+          fill="none" stroke="url(#spiralGrad)" stroke-width="2.5" stroke-linecap="round" filter="url(#neonGlow)">
+      <animate attributeName="stroke-dasharray" values="0,1000; 1000,0" dur="4s" repeatCount="indefinite" />
+    </path>
+
+    <!-- Scanning Radar Sweeper Beam -->
+    <g>
+      <path d="M 0 0 L 170 -60 A 180 180 0 0 0 120 -130 Z" fill="url(#glowCyan)" opacity="0.4" />
+      <line x1="0" y1="0" x2="170" y2="-60" stroke="#00f0ff" stroke-width="2" filter="url(#neonGlow)" />
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite" />
+    </g>
+
+    <!-- Last Known Position Marker (Center) -->
+    <circle cx="0" cy="0" r="4" fill="#ff0055" filter="url(#neonGlow)" />
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#ff0055" stroke-width="1.5">
+      <animate attributeName="r" values="6;18;6" dur="2s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="1;0.1;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <text x="10" y="-10" font-family="monospace" font-size="10" fill="#ff0055" font-weight="bold">LAST_KNOWN_POS</text>
+
+    <!-- Animated Scanning Target Reticle following the spiral endpoint -->
+    <g transform="translate(110, -115)">
+      <animateTransform attributeName="transform" type="translate" 
+        values="0,0; 15,-5; -20,20; -60,60; -87,-88; 110,-115; 0,0" 
+        dur="4s" repeatCount="indefinite" />
+      
+      <!-- Target Bounding Reticle -->
+      <rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#00f0ff" stroke-width="2" filter="url(#neonGlow)" />
+      <circle cx="0" cy="0" r="4" fill="#00f0ff" />
+      <text x="18" y="4" font-family="monospace" font-size="10" fill="#00f0ff" font-weight="bold">SEARCH_HEAD</text>
+    </g>
+
+    <!-- Re-acquired Laser Beacon Spot (Appears at Outer Edge) -->
+    <g transform="translate(110, -115)">
+      <circle cx="0" cy="0" r="10" fill="url(#beaconGlow)">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.7;0.85;0.95;1" dur="4s" repeatCount="indefinite" />
+      </circle>
+      <rect x="-18" y="-18" width="36" height="36" fill="none" stroke="#00ff88" stroke-width="2">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.7;0.85;0.95;1" dur="4s" repeatCount="indefinite" />
+      </rect>
+      <text x="-35" y="32" font-family="monospace" font-size="11" fill="#00ff88" font-weight="bold">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.7;0.85;0.95;1" dur="4s" repeatCount="indefinite" />
+        BEACON_REACQUIRED (0.84s)
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom Telemetry Bar -->
+  <g transform="translate(30, 400)">
+    <rect x="0" y="0" width="740" height="34" rx="6" fill="#0f172a" stroke="#1e293b" />
+    <text x="20" y="21" font-family="monospace" font-size="11" fill="#38bdf8">GIMBAL PAN: +1.42°</text>
+    <text x="170" y="21" font-family="monospace" font-size="11" fill="#38bdf8">GIMBAL TILT: -0.88°</text>
+    <text x="330" y="21" font-family="monospace" font-size="11" fill="#38bdf8">SLEW RATE: 5.00°/s [MAX]</text>
+    <text x="540" y="21" font-family="monospace" font-size="11" fill="#00ff88">COVERAGE: 100% GAPLESS</text>
+  </g>
+</svg>
